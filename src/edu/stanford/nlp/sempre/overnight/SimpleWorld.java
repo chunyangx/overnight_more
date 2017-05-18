@@ -20,7 +20,7 @@ import java.util.*;
 public final class SimpleWorld {
   public static class Options {
     @Option(gloss = "Number of entity samples")
-    public int numOfValueSamples = 60;
+    public int numOfValueSamples = 360;
     @Option(gloss = "Domain specifies which predicates/entities exist in the world")
     public String domain;
     @Option(gloss = "Verbosity")
@@ -606,8 +606,12 @@ public final class SimpleWorld {
   }
 
   // All dates for all domains are assumed to be in this range.
+  private static DateValue sampleSmallDate() {
+    return new DateValue(sampleInt(2001, 2009), -1, -1);
+  }
+ 
   private static DateValue sampleDate() {
-    return new DateValue(sampleInt(2000, 2010), -1, -1);
+    return new DateValue(sampleInt(1995, 2015), -1, -1);
   }
 
   ////////////////////////////////////////////////////////////
@@ -615,8 +619,8 @@ public final class SimpleWorld {
 
   public static class BlocksDomain extends Domain {
     public void createEntities(int numEntities) {
-      List<Value> blocks = makeValues(numEntities, L("en.block.block1", "en.block.block2"));
-      List<Value> shapes = makeValues(L("en.shape.pyramid", "en.shape.cube"));
+      List<Value> blocks = makeValues(numEntities, L("en.block.block1", "en.block.block2", "en.block.block3", "en.block.block4","en.block.block5","en.block.block6"));
+      List<Value> shapes = makeValues(L("en.shape.pyramid", "en.shape.cube", "en.shape.rectangular"));
       List<Value> colors = makeValues(L("en.color.red", "en.color.green"));
       for (Value e : blocks) {
         insertDB(e, "shape", sampleMultinomial(shapes));
@@ -634,7 +638,7 @@ public final class SimpleWorld {
     }
   }
 
-  public static class CalendarDomain extends Domain {
+  public static class CCalendarDomain extends Domain {
     private static DateValue sampleDate() {
       return new DateValue(2015, 1, sampleInt(1, 5));
     }
@@ -657,8 +661,72 @@ public final class SimpleWorld {
       }
     }
   }
+  
+  public static class CalendarDomain extends Domain {
+    private static DateValue sampleDate() {
+      return new DateValue(2015, 1, sampleInt(1, 7));
+    }
+    private static TimeValue sampleTime() {
+      return new TimeValue(sampleInt(9, 16), 0);
+    }
+    public void createEntities(int numEntities) {
+      List<Value> meetings = makeValues(numEntities, L("en.meeting.weekly_standup", "en.meeting.annual_review", "en.meeting.project1_review", "en.meeting.project2_review", "en.meeting.project3_review", "en.meeting.group_meeting","en.meeting.seminar"));
+      List<Value> people = makeValues(10,L("en.person.alice", "en.person.bob"));
+      List<Value> locations = makeValues(L("en.location.greenberg_cafe", "en.location.central_office"));
+      for (Value e : meetings) {
+        insertDB(e, "date", sampleDate());
+        insertDB(e, "start_time", sampleTime());
+        insertDB(e, "end_time", sampleTime());
+        insertDB(e, "length", new NumberValue(sampleInt(1, 4), "en.hour"));
+        insertDB(e, "attendee", sampleMultinomial(people, 2));
+        insertDB(e, "location", sampleMultinomial(locations));
+        if (sampleBernoulli(0.5))
+          insertDB(e, "is_important");
+      }
+    }
+  }
 
   public static class RestaurantsDomain extends Domain {
+    public static final List<String> RESTAURANT_VPS = Arrays.asList("reserve,credit,outdoor,takeout,delivery,waiter,kids,groups".split(","));
+    public static final List<String> RESTAURANT_CUISINES = Arrays.asList("en.cuisine.thai,en.cuisine.italian".split(","));
+    public static final List<String> RESTAURANT_MEALS = Arrays.asList("en.food.lunch,en.food.dinner".split(","));
+    public static final List<String> NEIGHBORHOODS = Arrays.asList("en.neighborhood.midtown_west,en.neighborhood.chelsea".split(","));
+
+    public void createEntities(int numEntities) {
+      List<Value> restaurants = makeValues(L("en.restaurant.thai_cafe", "en.restaurant.pizzeria_juno", "en.restaurant.ristorante_ciao", "en.restaurant.cinecitta", "en.restaurant.prima","en.restaurant.chao_phraya", "en.restaurant.thai_bangkok", "en.restaurant.thai_orchid", "en.restaurant.toscana", "en.restaurant.gazzetta"));
+      List<Value> neighborhoods = makeValues(NEIGHBORHOODS);
+      List<Value> cuisines = makeValues(RESTAURANT_CUISINES);
+      List<Value> meals = makeValues(RESTAURANT_MEALS);
+      for (Value e : restaurants) {
+        insertDB(e, "star_rating", new NumberValue(sampleInt(2, 5), "en.star"));
+        insertDB(e, "price_rating", new NumberValue(sampleInt(1, 5), "en.dollar_sign"));
+        insertDB(e, "num_reviews", new NumberValue(sampleInt(30, 40), "en.review"));
+        insertDB(e, "neighborhood", sampleMultinomial(neighborhoods));
+        insertDB(e, "cuisine", sampleMultinomial(cuisines));
+        insertDB(e, "meals", subsample(meals, 0.5));
+        for (String vp : RESTAURANT_VPS) {
+          if (sampleBernoulli(0.5))
+            insertDB(e, vp);
+        }
+      }
+      List<Value> krestaurants = makeValues(120,L("en.restaurant.unknown"));
+      for (Value e : krestaurants) {
+        insertDB(e, "star_rating", new NumberValue(sampleInt(0, 6), "en.star"));
+        insertDB(e, "price_rating", new NumberValue(sampleInt(1, 5), "en.dollar_sign"));
+        insertDB(e, "num_reviews", new NumberValue(sampleInt(10, 60), "en.review"));
+        insertDB(e, "neighborhood", sampleMultinomial(neighborhoods));
+        insertDB(e, "cuisine", sampleMultinomial(cuisines));
+        insertDB(e, "meals", subsample(meals, 0.5));
+        for (String vp : RESTAURANT_VPS) {
+          if (sampleBernoulli(0.5))
+            insertDB(e, vp);
+        }
+      }
+ 
+    }
+  }
+
+  public static class RRestaurantsDomain extends Domain {
     public static final List<String> RESTAURANT_VPS = Arrays.asList("reserve,credit,outdoor,takeout,delivery,waiter,kids,groups".split(","));
     public static final List<String> RESTAURANT_CUISINES = Arrays.asList("en.cuisine.thai,en.cuisine.french,en.cuisine.italian".split(","));
     public static final List<String> RESTAURANT_MEALS = Arrays.asList("en.food.breakfast,en.food.lunch,en.food.dinner".split(","));
@@ -684,7 +752,7 @@ public final class SimpleWorld {
     }
   }
 
-  public static class HousingDomain extends Domain {
+  public static class HHousingDomain extends Domain {
     public static final List<String> HOUSING_VPS = Arrays.asList("allows_cats,allows_dogs,has_private_bath,has_private_room".split(","));
     public static final List<String> HOUSING_TYPES = Arrays.asList("en.housing.apartment,en.housing.condo,en.housing.house,en.housing.flat".split(","));
     public static final List<String> NEIGHBORHOODS = Arrays.asList("en.neighborhood.tribeca,en.neighborhood.midtown_west,en.neighborhood.chelsea".split(","));
@@ -706,8 +774,48 @@ public final class SimpleWorld {
       }
     }
   }
+  
+  public static class HousingDomain extends Domain {
+    public static final List<String> HOUSING_VPS = Arrays.asList("allows_cats,allows_dogs,has_private_bath,has_private_room".split(","));
+    public static final List<String> HOUSING_TYPES = Arrays.asList("en.housing.apartment,en.housing.condo,en.housing.house,en.housing.flat".split(","));
+    public static final List<String> NEIGHBORHOODS = Arrays.asList("en.neighborhood.tribeca,en.neighborhood.midtown_west,en.neighborhood.chelsea".split(","));
+
+    public void createEntities(int numEntities) {
+      List<Value> units = makeValues(numEntities, L("en.housing_unit.123_sesame_street", "en.housing_unit.900_mission_ave", "en.housing_unit.46_marcelin_ave", "en.housing_unit.75_strasbourg_street", "en.housing_unit.hoche_ave"));
+      List<Value> housingTypes = makeValues(HOUSING_TYPES);
+      List<Value> neighborhoods = makeValues(NEIGHBORHOODS);
+      for (Value e : units) {
+        insertDB(e, "rent", new NumberValue(sampleMultinomial(L(1500, sampleInt(1000, 3000))), "en.dollar"));
+        insertDB(e, "size", new NumberValue(sampleMultinomial(L(800, sampleInt(500, 1500))), "en.square_feet"));
+        insertDB(e, "posting_date", sampleDate());
+        insertDB(e, "neighborhood", sampleMultinomial(neighborhoods));
+        insertDB(e, "housing_type", sampleMultinomial(housingTypes));
+        for (String vp : HOUSING_VPS) {
+          if (sampleBernoulli(0.5))
+            insertDB(e, vp);
+        }
+      }
+    }
+  }
+
 
   public static class PublicationDomain extends Domain {
+    public void createEntities(int numEntities) {
+      List<Value> articles = makeValues(numEntities, L("en.article.multivariate_data_analysis", "en.article.data_representation","en.article.component_analysis"));
+      List<Value> people = makeValues(L("en.person.efron", "en.person.lakoff", "en.person.hastie", "en.person.bishop", "en.person.hinkley", "en.person.fisher", "en.person.dantzig", "en.person.neyman", "en.person.pearson"));
+      List<Value> venues = makeValues(L("en.venue.computational_linguistics", "en.venue.annals_of_statistics"));
+      for (Value e : articles) {
+        int nb_authors = sampleInt(1,6);
+        insertDB(e, "author", sampleMultinomial(people, nb_authors));
+        insertDB(e, "venue", sampleMultinomial(venues));
+        insertDB(e, "publication_date", sampleDate());
+        insertDB(e, "cites", sampleMultinomial(articles, sampleInt(1, 10)));
+        insertDB(e, "won_award");
+      }
+    }
+  }
+   
+  public static class PPublicationDomain extends Domain {
     public void createEntities(int numEntities) {
       List<Value> articles = makeValues(numEntities, L("en.article.multivariate_data_analysis"));
       List<Value> people = makeValues(L("en.person.efron", "en.person.lakoff"));
@@ -721,17 +829,17 @@ public final class SimpleWorld {
       }
     }
   }
-
-  public static class SocialNetworkDomain extends Domain {
+  
+  public static class SSocialNetworkDomain extends Domain {
     public void createEntities(int numEntities) {
       List<Value> people = makeValues(numEntities, L("en.person.alice", "en.person.bob"));
       List<Value> genders = makeValues(L("en.gender.male", "en.gender.female"));
       List<Value> relationshipStatuses = makeValues(L("en.relationship_status.single", "en.relationship_status.married"));
       List<Value> cities = makeValues(L("en.city.new_york", "en.city.beijing"));
-      List<Value> universities = makeValues(L("en.university.brown", "en.university.berkeley", "en.university.ucla"));
-      List<Value> fields = makeValues(L("en.field.computer_science", "en.field.economics", "en.field.history"));
-      List<Value> companies = makeValues(L("en.company.google", "en.company.mckinsey", "en.company.toyota"));
-      List<Value> jobTitles = makeValues(L("en.job_title.ceo", "en.job_title.software_engineer", "en.job_title.program_manager"));
+      List<Value> universities = makeValues(L("en.university.brown", "en.university.ucla"));
+      List<Value> fields = makeValues(L("en.field.computer_science","en.field.history"));
+      List<Value> companies = makeValues(L("en.company.google", "en.company.mckinsey"));
+      List<Value> jobTitles = makeValues(L("en.job_title.software_engineer", "en.job_title.program_manager"));
       for (Value e : people) {
         insertDB(e, "gender", sampleMultinomial(genders));
         insertDB(e, "relationship_status", sampleMultinomial(relationshipStatuses));
@@ -759,7 +867,74 @@ public final class SimpleWorld {
     }
   }
 
-  public static class BasketballDomain extends Domain {
+
+  public static class SocialNetworkDomain extends Domain {
+    public void createEntities(int numEntities) {
+      List<Value> people = makeValues(L("en.person.alice", "en.person.bob","en.person.carol","en.person.carlos","en.person.charlie","en.person.chuck","en.person.craig", "en.person.erin", "en.person.eric"));
+      List<Value> genders = makeValues(L("en.gender.male", "en.gender.female"));
+      List<Value> relationshipStatuses = makeValues(L("en.relationship_status.single", "en.relationship_status.married"));
+      List<Value> cities = makeValues(L("en.city.new_york", "en.city.beijing"));
+      List<Value> universities = makeValues(L("en.university.brown", "en.university.ucla"));
+      List<Value> fields = makeValues(L("en.field.computer_science","en.field.history"));
+      List<Value> companies = makeValues(L("en.company.google", "en.company.mckinsey"));
+      List<Value> jobTitles = makeValues(L("en.job_title.software_engineer", "en.job_title.program_manager"));
+      List<Value> kpeople  = makeValues(60, L("en.person.unknown"));
+      for (Value e : people) {
+        insertDB(e, "gender", sampleMultinomial(genders));
+        insertDB(e, "relationship_status", sampleMultinomial(relationshipStatuses));
+        insertDB(e, "height", new NumberValue(sampleInt(175, 205), "en.cm"));
+        insertDB(e, "birthdate", sampleDate());
+        insertDB(e, "birthplace", sampleMultinomial(cities));
+        insertDB(e, "friend", sampleMultinomial(people, sampleInt(0, 3)));
+        if (sampleBernoulli(0.5))
+          insertDB(e, "logged_in");
+      }
+      for (Value e : kpeople) {
+        insertDB(e, "gender", sampleMultinomial(genders));
+        insertDB(e, "relationship_status", sampleMultinomial(relationshipStatuses));
+        insertDB(e, "height", new NumberValue(sampleInt(150, 210), "en.cm"));
+        insertDB(e, "birthdate", sampleDate());
+        insertDB(e, "birthplace", sampleMultinomial(cities));
+        insertDB(e, "friend", sampleMultinomial(people, sampleInt(0, 5)));
+        if (sampleBernoulli(0.5))
+          insertDB(e, "logged_in");
+      }     
+      for (Value e : makeValues(numEntities, L("en.education.0"))) {
+        insertDB(e, "student", sampleMultinomial(people));
+        insertDB(e, "university", sampleMultinomial(universities));
+        insertDB(e, "field_of_study", sampleMultinomial(fields));
+        insertDB(e, "education_start_date", sampleSmallDate());
+        insertDB(e, "education_end_date", sampleSmallDate());
+      }
+      for (Value e : makeValues(numEntities, L("en.employment.0"))) {
+        insertDB(e, "employee", sampleMultinomial(people));
+        insertDB(e, "employer", sampleMultinomial(companies));
+        insertDB(e, "job_title", sampleMultinomial(jobTitles));
+        insertDB(e, "employment_start_date", sampleSmallDate());
+        insertDB(e, "employment_end_date", sampleSmallDate());
+      }
+      List<Value> edu_values = makeValues(numEntities*2, L("en.education.0"));
+      for (int i = numEntities; i < numEntities*2; ++i){
+        Value e = edu_values.get(i);
+        insertDB(e, "student", sampleMultinomial(kpeople));
+        insertDB(e, "university", sampleMultinomial(universities));
+        insertDB(e, "field_of_study", sampleMultinomial(fields));
+        insertDB(e, "education_start_date", sampleDate());
+        insertDB(e, "education_end_date", sampleDate());
+      }
+      List<Value> emp_values = makeValues(numEntities*2, L("en.employment.0"));
+      for (int i = numEntities;i < numEntities*2; ++i) {
+        Value e = emp_values.get(i);
+        insertDB(e, "employee", sampleMultinomial(kpeople));
+        insertDB(e, "employer", sampleMultinomial(companies));
+        insertDB(e, "job_title", sampleMultinomial(jobTitles));
+        insertDB(e, "employment_start_date", sampleDate());
+        insertDB(e, "employment_end_date", sampleDate());
+      }
+    }
+  }
+  
+  public static class BBasketballDomain extends Domain {
     public void createEntities(int numEntities) {
       List<Value> players = makeValues(numEntities, L("en.player.kobe_bryant", "en.player.lebron_james"));
       List<Value> teams = makeValues(L("en.team.lakers", "en.team.cavaliers"));
@@ -779,6 +954,80 @@ public final class SimpleWorld {
         insertDB(e, "num_fouls", new NumberValue(sampleInt(0, 10), "foul"));
         insertDB(e, "num_games_played", new NumberValue(sampleInt(0, 10), "game"));
       }
+    }
+  }
+  
+  public static class BasketballDomain extends Domain {
+    public void createEntities(int numEntities) {
+      List<Value> players = makeValues(L("en.player.kobe_bryant", "en.player.lebron_james", "en.player.stephen_curry", "en.player.shaq_oneal","en.player.russel_westbrook", "en.player.tim_duncan", "en.player.kawhi_leonard", "en.player.kevin_durant"));
+      List<Value> teams = makeValues(L("en.team.lakers", "en.team.cavaliers", "en.team.warriors","en.team.thunders", "en.team.spurs"));
+      List<Value> positions = makeValues(L("en.position.point_guard", "en.position.forward"));
+      for (Value e : makeValues(numEntities, L("en.stats.0"))) {
+        insertDB(e, "player", sampleMultinomial(players));
+        insertDB(e, "position", sampleMultinomial(positions));
+        insertDB(e, "team", sampleMultinomial(teams));
+        insertDB(e, "season", sampleDate());
+
+        insertDB(e, "num_points", new NumberValue(sampleInt(1, 5), "point"));
+        insertDB(e, "num_assists", new NumberValue(sampleInt(1, 5), "assist"));
+        insertDB(e, "num_steals", new NumberValue(sampleInt(1, 5), "steal"));
+        insertDB(e, "num_turnovers", new NumberValue(sampleInt(1, 5), "turnover"));
+        insertDB(e, "num_rebounds", new NumberValue(sampleInt(1, 5), "rebound"));
+        insertDB(e, "num_blocks", new NumberValue(sampleInt(1, 5), "block"));
+        insertDB(e, "num_fouls", new NumberValue(sampleInt(1, 5), "foul"));
+        insertDB(e, "num_games_played", new NumberValue(sampleInt(1, 5), "game"));
+      }
+      List<Value> kplayers = makeValues(120,L("en.player.kobe_bryant", "en.player.lebron_james", "en.player.stephen_curry", "en.player.shaq_oneal","en.player.russel_westbrook", "en.player.tim_duncan", "en.player.kawhi_leonard", "en.player.kevin_durant"));
+      List<Value> values = makeValues(numEntities*2, L("en.stats.0"));
+      for (int i = numEntities; i <numEntities*2; ++i ) {
+        Value e = values.get(i);
+        insertDB(e, "player", sampleMultinomial(kplayers));
+        insertDB(e, "position", sampleMultinomial(positions));
+        insertDB(e, "team", sampleMultinomial(teams));
+        insertDB(e, "season", sampleDate());
+
+        insertDB(e, "num_points", new NumberValue(sampleInt(1, 20), "point"));
+        insertDB(e, "num_assists", new NumberValue(sampleInt(1, 12), "assist"));
+        insertDB(e, "num_steals", new NumberValue(sampleInt(1, 12), "steal"));
+        insertDB(e, "num_turnovers", new NumberValue(sampleInt(1, 12), "turnover"));
+        insertDB(e, "num_rebounds", new NumberValue(sampleInt(1, 12), "rebound"));
+        insertDB(e, "num_blocks", new NumberValue(sampleInt(1, 12), "block"));
+        insertDB(e, "num_fouls", new NumberValue(sampleInt(1, 5), "foul"));
+        insertDB(e, "num_games_played", new NumberValue(sampleInt(1, 10), "game"));
+      }
+      /*
+      List<Value> kplayers = makeValues(numEntities,L("en.player.kobe_bryant"));
+      for (Value e : makeValues(50, L("en.stats.0"))) {
+        insertDB(e, "player", sampleMultinomial(kplayers));
+        insertDB(e, "position", sampleMultinomial(positions));
+        insertDB(e, "team", sampleMultinomial(teams));
+        insertDB(e, "season", sampleDate());
+
+        insertDB(e, "num_points", new NumberValue(sampleInt(1, 5), "point"));
+        insertDB(e, "num_assists", new NumberValue(sampleInt(1, 5), "assist"));
+        insertDB(e, "num_steals", new NumberValue(sampleInt(1, 5), "steal"));
+        insertDB(e, "num_turnovers", new NumberValue(sampleInt(1, 5), "turnover"));
+        insertDB(e, "num_rebounds", new NumberValue(sampleInt(1, 5), "rebound"));
+        insertDB(e, "num_blocks", new NumberValue(sampleInt(1, 5), "block"));
+        insertDB(e, "num_fouls", new NumberValue(sampleInt(1, 5), "foul"));
+        insertDB(e, "num_games_played", new NumberValue(sampleInt(1, 5), "game"));
+      }
+      for (Value e : makeValues(50, L("en.stats.0"))) {
+        insertDB(e, "player", sampleMultinomial(kplayers));
+        insertDB(e, "position", sampleMultinomial(positions));
+        insertDB(e, "team", sampleMultinomial(teams));
+        insertDB(e, "season", sampleDate());
+
+        insertDB(e, "num_points", new NumberValue(sampleInt(1, 20), "point"));
+        insertDB(e, "num_assists", new NumberValue(sampleInt(1, 12), "assist"));
+        insertDB(e, "num_steals", new NumberValue(sampleInt(1, 12), "steal"));
+        insertDB(e, "num_turnovers", new NumberValue(sampleInt(1, 12), "turnover"));
+        insertDB(e, "num_rebounds", new NumberValue(sampleInt(1, 12), "rebound"));
+        insertDB(e, "num_blocks", new NumberValue(sampleInt(1, 12), "block"));
+        insertDB(e, "num_fouls", new NumberValue(sampleInt(1, 5), "foul"));
+        insertDB(e, "num_games_played", new NumberValue(sampleInt(1, 10), "game"));
+     }
+     */
     }
   }
 

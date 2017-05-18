@@ -6,6 +6,12 @@
 (rule $TypeNP (restaurant) (ConstantFn en.restaurant))
 (rule $EntityNP1 (thai cafe) (ConstantFn en.restaurant.thai_cafe))
 (rule $EntityNP2 (pizzeria juno) (ConstantFn en.restaurant.pizzeria_juno))
+(rule $EntityNP1 (ristorante ciao) (ConstantFn en.restaurant.ristorante_ciao))
+(rule $EntityNP1 (cinecitta) (ConstantFn en.restaurant.cinecitta))
+(rule $EntityNP1 (prima) (ConstantFn en.restaurant.prima))
+(rule $EntityNP1 (chao phraya) (ConstantFn en.restaurant.chao_phraya))
+(rule $EntityNP1 (thai bangkok) (ConstantFn en.restaurant.thai_bangkok))
+(rule $EntityNP1 (thai orchid) (ConstantFn en.restaurant.thai_orchid))
 
 # Properties
 (rule $RelNP (star rating) (ConstantFn (string star_rating)))

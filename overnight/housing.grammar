@@ -11,11 +11,15 @@
 (rule $TypeNP (housing unit) (ConstantFn en.housing_unit))
 (rule $EntityNP1 (123 sesame street) (ConstantFn en.housing_unit.123_sesame_street))
 (rule $EntityNP2 (900 mission ave) (ConstantFn en.housing_unit.900_mission_ave))
+(rule $EntityNP1 (46 marcelin ave) (ConstantFn en.housing_unit.46_marcelin_ave))
+(rule $EntityNP1 (75 strasbourg street) (ConstantFn en.housing_unit.123_sesame_street))
+(rule $EntityNP1 (hoche ave) (ConstantFn en.housing_unit.hoche_ave))
 
 # Properties
 (rule $RelNP (monthly rent) (ConstantFn (string rent)))
 (rule $EntityNP1 (1500 dollars) (ConstantFn (number 1500 en.dollar)))
 (rule $EntityNP2 (2000 dollars) (ConstantFn (number 2000 en.dollar)))
+(rule $EntityNP1 (1750 dollars) (ConstantFn (number 1750 en.dollar)))
 
 (rule $RelNP (size) (ConstantFn (string size)))
 (rule $EntityNP1 (800 square feet) (ConstantFn (number 800 en.square_feet)))

@@ -554,7 +554,8 @@ addMode('overnight', 'Overnight semantic parsing', l(
   o('DerivationPruner.pruningComputers', ['overnight.OvernightDerivationPruningComputer']),
   o('Dataset.inPaths', 
     lambda { |e| 'train:lib/data/overnight/' + e[:domain] + '.paraphrases.train.examples' },
-    lambda { |e| 'test:lib/data/overnight/' + e[:domain] + '.paraphrases.test.examples' }),
+    lambda { |e| 'dev:lib/data/overnight/' + e[:domain] + '.paraphrases.test.examples.dev' },
+    lambda { |e| 'test:lib/data/overnight/' + e[:domain] + '.paraphrases.test.examples.new' }),
   sel(:domain, {
     'geo880' => l(
       letDefault(:data,0),

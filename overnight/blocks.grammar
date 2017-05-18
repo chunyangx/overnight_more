@@ -4,11 +4,16 @@
 (rule $TypeNP (block) (ConstantFn en.block))
 (rule $EntityNP1 (block 1) (ConstantFn en.block.block1))
 (rule $EntityNP2 (block 2) (ConstantFn en.block.block2))
+(rule $EntityNP1 (block 3) (ConstantFn en.block.block3))
+(rule $EntityNP1 (block 4) (ConstantFn en.block.block4))
+(rule $EntityNP1 (block 5) (ConstantFn en.block.block5))
+(rule $EntityNP1 (block 6) (ConstantFn en.block.block6))
 
 # Properties
 (rule $RelNP (shape) (ConstantFn (string shape)))
 (rule $EntityNP1 (a pyramid) (ConstantFn en.shape.pyramid))
 (rule $EntityNP2 (a cube) (ConstantFn en.shape.cube))
+(rule $EntityNP1 (a rectangular) (ConstantFn en.shape.rectangular))
 
 (rule $RelNP (color) (ConstantFn (string color)))
 (rule $EntityNP1 (red) (ConstantFn en.color.red))

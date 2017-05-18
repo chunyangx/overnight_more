@@ -5,12 +5,21 @@
 # Types
 (rule $TypeNP (article) (ConstantFn en.article))
 (rule $EntityNP1 (multivariate data analysis) (ConstantFn en.article.multivariate_data_analysis))
+(rule $EntityNP1 (data representation) (ConstantFn en.article.data_representation))
+(rule $EntityNP1 (component analysis) (ConstantFn en.article.component_analysis))
 
 # Properties
 (rule $RelNP (author) (ConstantFn (string author)))
 (rule $TypeNP (person) (ConstantFn en.person))
 (rule $EntityNP1 (efron) (ConstantFn en.person.efron))
 (rule $EntityNP2 (lakoff) (ConstantFn en.person.lakoff))
+(rule $EntityNP1 (hastie) (ConstantFn en.person.hastie))
+(rule $EntityNP1 (hinkley) (ConstantFn en.person.hinkley))
+(rule $EntityNP1 (bishop) (ConstantFn en.person.bishop))
+(rule $EntityNP1 (fisher) (ConstantFn en.person.fisher))
+(rule $EntityNP1 (dantzig) (ConstantFn en.person.dantzig))
+(rule $EntityNP1 (neyman) (ConstantFn en.person.neyman))
+(rule $EntityNP1 (pearson) (ConstantFn en.person.pearson))
 
 (rule $RelNP (venue) (ConstantFn (string venue)))
 (rule $TypeNP (venue) (ConstantFn en.venue))
@@ -19,6 +28,7 @@
 
 (rule $RelNP (publication date) (ConstantFn (string publication_date)))
 (rule $EntityNP1 (2004) (ConstantFn (date 2004 -1 -1)))
+(rule $EntityNP1 (2006) (ConstantFn (date 2006 -1 -1)))
 (rule $EntityNP2 (2010) (ConstantFn (date 2010 -1 -1)))
 
 (rule $VP/NP (cites) (ConstantFn (string cites)))

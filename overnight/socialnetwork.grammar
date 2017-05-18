@@ -6,6 +6,11 @@
 (rule $TypeNP (person) (ConstantFn en.person))
 (rule $EntityNP1 (alice) (ConstantFn en.person.alice))
 (rule $EntityNP2 (bob) (ConstantFn en.person.bob))
+(rule $EntityNP1 (carol) (ConstantFn en.person.carol))
+(rule $EntityNP1 (carlos) (ConstantFn en.person.carlos))
+(rule $EntityNP1 (charlie) (ConstantFn en.person.charlie))
+(rule $EntityNP1 (chuck) (ConstantFn en.person.chuck))
+(rule $EntityNP1 (craig) (ConstantFn en.person.craig))
 
 (rule $VP/NP (is friends with) (ConstantFn (string friend)))
 

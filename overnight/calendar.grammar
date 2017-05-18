@@ -4,16 +4,23 @@
 (rule $TypeNP (meeting) (ConstantFn en.meeting))
 (rule $EntityNP1 (weekly standup) (ConstantFn en.meeting.weekly_standup))
 (rule $EntityNP2 (annual review) (ConstantFn en.meeting.annual_review))
+(rule $EntityNP1 (project1 review) (ConstantFn en.meeting.project1_review))
+(rule $EntityNP1 (project2 review) (ConstantFn en.meeting.project2_review))
+(rule $EntityNP1 (project3 review) (ConstantFn en.meeting.project3_review))
+(rule $EntityNP1 (group meeting) (ConstantFn en.meeting.group_meeting))
+(rule $EntityNP1 (seminar) (ConstantFn en.meeting.seminar))
 
 # Properties
 (rule $RelNP (date) (ConstantFn (string date)))
 (rule $EntityNP1 (jan 2) (ConstantFn (date 2015 1 2)))
 (rule $EntityNP2 (jan 3) (ConstantFn (date 2015 1 3)))
+(rule $EntityNP1 (jan 4) (ConstantFn (date 2015 1 4)))
 
 (rule $RelNP (start time) (ConstantFn (string start_time)))
 (rule $RelNP (end time) (ConstantFn (string end_time)))
 (rule $EntityNP1 (10am) (ConstantFn (time 10 0)))
 (rule $EntityNP2 (3pm) (ConstantFn (time 15 0)))
+(rule $EntityNP1 (11am) (ConstantFn (time 11 0)))
 
 (rule $RelNP (length) (ConstantFn (string length)))
 (rule $EntityNP1 (three hours) (ConstantFn (number 3 en.hour)))
