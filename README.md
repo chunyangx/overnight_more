@@ -165,3 +165,4 @@ Changes from SEMPRE 2.0 to SEMPRE 2.1:
 
 - Added the `tables` package for the paper *Compositional semantic parsing on semi-structured tables* (ACL 2015).
 - Add and `overnight` package for the paper *Building a semantic parser overnight* (ACL 2015).
+- Improve the 'overnight' dataset 1) test only on unseen logical forms 2) addingmore entities and test on unseen entities. This dataset is used for the paper *Symbolic Priors for RNN-based Semantic Parsing* (IJCAI 2017) 
